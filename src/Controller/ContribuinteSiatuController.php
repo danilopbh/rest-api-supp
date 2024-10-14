@@ -24,6 +24,9 @@ class ContribuinteSiatuController extends AbstractController
     {
         // Fetch all Contribuintes with their CertidaoDivida relations
         $contribuintes = $contribuinteSiatuRepository->findAll();
+
+
+
         $data = [];
 
         foreach ($contribuintes as $contribuinte) {
@@ -31,7 +34,7 @@ class ContribuinteSiatuController extends AbstractController
             $certidoes = [];
 
             foreach ($contribuinte->getCertidaoDividaSiatu() as $certidaoDivida) {
-
+                print_r($certidaoDivida);
                 // Obter o PDF como string
                 $pdfDivida = $certidaoDivida->getPdfDivida();
                 $pdfContent = '';
@@ -62,7 +65,7 @@ class ContribuinteSiatuController extends AbstractController
                 'certidoesDivida' => $certidoes,
             ];
         }
-
+        
         return new JsonResponse($data, Response::HTTP_OK);
     }
 }

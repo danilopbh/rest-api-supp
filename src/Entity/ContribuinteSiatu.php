@@ -3,9 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\ContribuinteSiatuRepository;
-use Doctrine\ORM\Mapping as ORM;
-
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ContribuinteSiatuRepository::class)]
 class ContribuinteSiatu
@@ -18,26 +18,26 @@ class ContribuinteSiatu
     #[ORM\Column(length: 255)]
     private ?string $nome = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 25)]
     private ?string $cpf = null;
 
     #[ORM\Column(length: 255)]
     private ?string $endereco = null;
 
+    /**
+     * @var Collection<int, CertidaoDividaSiatu>
+     */
     #[ORM\OneToMany(targetEntity: CertidaoDividaSiatu::class, mappedBy: 'contribuinte_siatu')]
-    private Collection $certidaoDividaSiatu;
+    private Collection $contribuinte_siatu;
 
+    public function __construct()
+    {
+        $this->contribuinte_siatu = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
     }
 
     public function getNome(): ?string
@@ -76,8 +76,35 @@ class ContribuinteSiatu
         return $this;
     }
 
-    public function getCertidaoDividaSiatu(): Collection
+    /**
+     * @return Collection<int, CertidaoDividaSiatu>
+     */
+    public function getContribuinteSiatu(): Collection
     {
-        return $this->certidaoDividaSiatu;
+        return $this->contribuinte_siatu;
     }
+
+    public function addContribuinteSiatu(CertidaoDividaSiatu $contribuinteSiatu): static
+    {
+        if (!$this->contribuinte_siatu->contains($contribuinteSiatu)) {
+            $this->contribuinte_siatu->add($contribuinteSiatu);
+            $contribuinteSiatu->setContribuinteSiatu($this);
+        }
+
+        return $this;
+    }
+
+    public function removeContribuinteSiatu(CertidaoDividaSiatu $contribuinteSiatu): static
+    {
+        if ($this->contribuinte_siatu->removeElement($contribuinteSiatu)) {
+            // set the owning side to null (unless already changed)
+            if ($contribuinteSiatu->getContribuinteSiatu() === $this) {
+                $contribuinteSiatu->setContribuinteSiatu(null);
+            }
+        }
+
+        return $this;
+    }
+
+  
 }

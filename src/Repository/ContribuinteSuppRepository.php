@@ -2,22 +2,22 @@
 
 namespace App\Repository;
 
-use App\Entity\ContribuinteSiatu;
+use App\Entity\ContribuinteSupp;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
 
 /**
- * @extends ServiceEntityRepository<ContribuinteSiatu>
+ * @extends ServiceEntityRepository<ContribuinteSupp>
  */
-class ContribuinteSiatuRepository extends ServiceEntityRepository
+class ContribuinteSuppRepository extends ServiceEntityRepository
 {
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct($registry, ContribuinteSiatu::class);
+        parent::__construct($registry, ContribuinteSupp::class);
     }
 
     //    /**
-    //     * @return ContribuinteSiatu[] Returns an array of ContribuinteSiatu objects
+    //     * @return ContribuinteSupp[] Returns an array of ContribuinteSupp objects
     //     */
     //    public function findByExampleField($value): array
     //    {
@@ -31,7 +31,7 @@ class ContribuinteSiatuRepository extends ServiceEntityRepository
     //        ;
     //    }
 
-    //    public function findOneBySomeField($value): ?ContribuinteSiatu
+    //    public function findOneBySomeField($value): ?ContribuinteSupp
     //    {
     //        return $this->createQueryBuilder('c')
     //            ->andWhere('c.exampleField = :val')

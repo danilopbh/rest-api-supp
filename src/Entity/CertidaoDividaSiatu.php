@@ -14,44 +14,22 @@ class CertidaoDividaSiatu
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?ContribuinteSiatu $contribuinte_siatu = null;
-
     #[ORM\Column]
     private ?float $valor = null;
 
     #[ORM\Column(type: Types::BLOB, nullable: true)]
     private $pdfdivida;
 
-    #[ORM\Column(length: 255, nullable: true)]
+    #[ORM\Column(length: 255)]
     private ?string $descricao = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
-    private ?\DateTimeInterface $data_vencimento = null;
+    #[ORM\ManyToOne(inversedBy: 'contribuinte_siatu')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?ContribuinteSiatu $contribuinte_siatu = null;
 
     public function getId(): ?int
     {
         return $this->id;
-    }
-
-    public function setId(int $id): static
-    {
-        $this->id = $id;
-
-        return $this;
-    }
-
-    public function getContribuinteSiatu(): ?ContribuinteSiatu
-    {
-        return $this->contribuinte_siatu;
-    }
-
-    public function setContribuinteSiatu(?ContribuinteSiatu $contribuinte_siatu): static
-    {
-        $this->contribuinte_siatu = $contribuinte_siatu;
-
-        return $this;
     }
 
     public function getValor(): ?float
@@ -83,21 +61,21 @@ class CertidaoDividaSiatu
         return $this->descricao;
     }
 
-    public function setDescricao(?string $descricao): static
+    public function setDescricao(string $descricao): static
     {
         $this->descricao = $descricao;
 
         return $this;
     }
 
-    public function getDataVencimento(): ?\DateTimeInterface
+    public function getContribuinteSiatu(): ?ContribuinteSiatu
     {
-        return $this->data_vencimento;
+        return $this->contribuinte_siatu;
     }
 
-    public function setDataVencimento(?\DateTimeInterface $data_vencimento): static
+    public function setContribuinteSiatu(?ContribuinteSiatu $contribuinte_siatu): static
     {
-        $this->data_vencimento = $data_vencimento;
+        $this->contribuinte_siatu = $contribuinte_siatu;
 
         return $this;
     }
