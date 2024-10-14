@@ -34,7 +34,7 @@ class ContribuinteSiatuController extends AbstractController
             $certidoes = [];
 
             foreach ($contribuinte->getCertidaoDividaSiatu() as $certidaoDivida) {
-                print_r($certidaoDivida);
+            
                 // Obter o PDF como string
                 $pdfDivida = $certidaoDivida->getPdfDivida();
                 $pdfContent = '';

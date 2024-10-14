@@ -28,11 +28,11 @@ class ContribuinteSiatu
      * @var Collection<int, CertidaoDividaSiatu>
      */
     #[ORM\OneToMany(targetEntity: CertidaoDividaSiatu::class, mappedBy: 'contribuinte_siatu')]
-    private Collection $contribuinte_siatu;
+    private Collection $certidaoDividaSiatu;
 
     public function __construct()
     {
-        $this->contribuinte_siatu = new ArrayCollection();
+        $this->certidaoDividaSiatu = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -79,32 +79,30 @@ class ContribuinteSiatu
     /**
      * @return Collection<int, CertidaoDividaSiatu>
      */
-    public function getContribuinteSiatu(): Collection
+    public function getCertidaoDividaSiatu(): Collection
     {
-        return $this->contribuinte_siatu;
+        return $this->certidaoDividaSiatu;
     }
 
-    public function addContribuinteSiatu(CertidaoDividaSiatu $contribuinteSiatu): static
+    public function addCertidaoDividaSiatu(CertidaoDividaSiatu $certidaoDividaSiatu): static
     {
-        if (!$this->contribuinte_siatu->contains($contribuinteSiatu)) {
-            $this->contribuinte_siatu->add($contribuinteSiatu);
-            $contribuinteSiatu->setContribuinteSiatu($this);
+        if (!$this->certidaoDividaSiatu->contains($certidaoDividaSiatu)) {
+            $this->certidaoDividaSiatu->add($certidaoDividaSiatu);
+            $certidaoDividaSiatu->setContribuinte($this);
         }
 
         return $this;
     }
 
-    public function removeContribuinteSiatu(CertidaoDividaSiatu $contribuinteSiatu): static
+    public function removeCertidaoDividaSiatu(CertidaoDividaSiatu $certidaoDividaSiatu): static
     {
-        if ($this->contribuinte_siatu->removeElement($contribuinteSiatu)) {
+        if ($this->certidaoDividaSiatu->removeElement($certidaoDividaSiatu)) {
             // set the owning side to null (unless already changed)
-            if ($contribuinteSiatu->getContribuinteSiatu() === $this) {
-                $contribuinteSiatu->setContribuinteSiatu(null);
+            if ($certidaoDividaSiatu->getContribuinte() === $this) {
+                $certidaoDividaSiatu->setContribuinte(null);
             }
         }
 
         return $this;
     }
-
-  
 }

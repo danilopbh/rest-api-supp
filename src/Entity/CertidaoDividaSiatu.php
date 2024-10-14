@@ -17,13 +17,16 @@ class CertidaoDividaSiatu
     #[ORM\Column]
     private ?float $valor = null;
 
-    #[ORM\Column(type: Types::BLOB, nullable: true)]
+    #[ORM\Column(type: Types::BLOB)]
     private $pdfdivida;
 
     #[ORM\Column(length: 255)]
     private ?string $descricao = null;
 
-    #[ORM\ManyToOne(inversedBy: 'contribuinte_siatu')]
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $data_vencimento = null;
+
+    #[ORM\ManyToOne(inversedBy: 'certidaoDividaSiatu')]
     #[ORM\JoinColumn(nullable: false)]
     private ?ContribuinteSiatu $contribuinte_siatu = null;
 
@@ -68,12 +71,24 @@ class CertidaoDividaSiatu
         return $this;
     }
 
-    public function getContribuinteSiatu(): ?ContribuinteSiatu
+    public function getDataVencimento(): ?\DateTimeInterface
+    {
+        return $this->data_vencimento;
+    }
+
+    public function setDataVencimento(\DateTimeInterface $data_vencimento): static
+    {
+        $this->data_vencimento = $data_vencimento;
+
+        return $this;
+    }
+
+    public function getContribuinte(): ?ContribuinteSiatu
     {
         return $this->contribuinte_siatu;
     }
 
-    public function setContribuinteSiatu(?ContribuinteSiatu $contribuinte_siatu): static
+    public function setContribuinte(?ContribuinteSiatu $contribuinte_siatu): static
     {
         $this->contribuinte_siatu = $contribuinte_siatu;
 
