@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ContribuinteSuppRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 
 #[ORM\Entity(repositoryClass: ContribuinteSuppRepository::class)]
@@ -21,6 +23,17 @@ class ContribuinteSupp
 
     #[ORM\Column(length: 255)]
     private ?string $endereco = null;
+
+    /**
+     * @var Collection<int, CertidaoDividaSupp>
+     */
+    #[ORM\OneToMany(targetEntity: CertidaoDividaSupp::class, mappedBy: 'contribuinte_supp')]
+    private Collection $certidaoDividaSupp;
+
+    public function __construct()
+    {
+        $this->certidaoDividaSupp = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -59,6 +72,36 @@ class ContribuinteSupp
     public function setEndereco(string $endereco): static
     {
         $this->endereco = $endereco;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, CertidaoDividaSupp>
+     */
+    public function getCertidaoDividaSupp(): Collection
+    {
+        return $this->certidaoDividaSupp;
+    }
+
+    public function addCertidaoDividaSupp(CertidaoDividaSupp $certidaoDividaSupp): static
+    {
+        if (!$this->certidaoDividaSupp->contains($certidaoDividaSupp)) {
+            $this->certidaoDividaSupp->add($certidaoDividaSupp);
+            $certidaoDividaSupp->setContribuinteSupp($this);
+        }
+
+        return $this;
+    }
+
+    public function removeCertidaoDividaSupp(CertidaoDividaSupp $certidaoDividaSupp): static
+    {
+        if ($this->certidaoDividaSupp->removeElement($certidaoDividaSupp)) {
+            // set the owning side to null (unless already changed)
+            if ($certidaoDividaSupp->getContribuinteSupp() === $this) {
+                $certidaoDividaSupp->setContribuinteSupp(null);
+            }
+        }
 
         return $this;
     }
