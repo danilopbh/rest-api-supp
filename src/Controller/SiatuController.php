@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -9,6 +10,7 @@ use App\Entity\ContribuinteSupp;
 use App\Entity\CertidaoDividaSupp;
 use App\Rules\CertidaoDividaRules;
 use Symfony\Component\Routing\Annotation\Route;
+
 class SiatuController extends AbstractController
 {
     private SiatuResource $siatuResource;
@@ -26,16 +28,24 @@ class SiatuController extends AbstractController
     public function importarDados(): Response
     {
         // Importar contribuintes
-       
+
         $contribuintes = $this->siatuResource->getContribuintes();
+        $certidaoDivida = $this->siatuResource->getContribuintesCertidaoSupp();
+
+        /*echo '<pre>';
+            print_r($certidaoDivida);
+        echo '</pre>';
         
-    
+        die();*/
+
+
         foreach ($contribuintes as $contribuinteDTO) {
 
+
             $contribuinte = new ContribuinteSupp();
-        
-            
-            //  $contribuinte->setId($contribuinteDTO->id);
+
+
+            $contribuinte->setId($contribuinteDTO->id);
             $contribuinte->setNome($contribuinteDTO->nome);
             $contribuinte->setCpf($contribuinteDTO->cpf);
             $contribuinte->setEndereco($contribuinteDTO->endereco);
@@ -43,32 +53,40 @@ class SiatuController extends AbstractController
 
 
             $this->entityManager->persist($contribuinte);
+            $this->entityManager->flush(); // Gerar o ID do contribuinte
+
+
+            $contribuinteId = $contribuinteDTO->id;
+
+
+            foreach ($certidaoDivida as $certidaoDTO) {
+
+                if (!CertidaoDividaRules::validate($certidaoDTO)) {
+                    continue;
+                }
+
+
+                $contribuinteSupp = $this->entityManager->getRepository(ContribuinteSupp::class)->find($contribuinteId);
+
+                dd($contribuinteSupp);
+                $certidao = new CertidaoDividaSupp();
+                //$certidao->setId($certidaoDTO->id);
+                $certidao->setContribuinteSupp($contribuinteSupp);
+                $certidao->setValor($certidaoDTO->valor);
+                $certidao->setDescricao($certidaoDTO->descricao);
+                $certidao->setPdfDivida($certidaoDTO->pdfDivida);
+                $certidao->setDataVencimento($certidaoDTO->dataVencimento);
+
+                $this->entityManager->persist($certidao);
+            }
+            $this->entityManager->flush();
         }
 
-        // Importar certidões de dívida
-       // $certidoes = $this->siatuResource->getCertidoes();
 
-        //die();
 
-     /*   foreach ($certidoes as $certidaoDTO) {
-            if (!CertidaoDividaRules::validate($certidaoDTO)) {
-                continue;
-            }
 
-            $certidao = new CertidaoDividaSupp();
-            //$certidao->setId($certidaoDTO->id);
-            $certidao->setContribuinteSupp($certidaoDTO->contribuinteSuppId);
-            $certidao->setValor($certidaoDTO->valor);
-            $certidao->setDescricao($certidaoDTO->descricao);
-            $certidao->setPdfDivida($certidaoDTO->pdfDivida);
 
-            $this->entityManager->persist($certidao);
-        }*/
-
-        $this->entityManager->flush();
 
         return new Response('Dados importados com sucesso.');
     }
 }
-
-?>

@@ -5,12 +5,13 @@ namespace App\Entity;
 use App\Repository\CertidaoDividaSuppRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\ContribuinteSupp;
 
 #[ORM\Entity(repositoryClass: CertidaoDividaSuppRepository::class)]
 class CertidaoDividaSupp
 {
     #[ORM\Id]
-    #[ORM\GeneratedValue]
+   // #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
@@ -87,7 +88,7 @@ class CertidaoDividaSupp
         return $this->contribuinte_supp;
     }
 
-    public function setContribuinteSupp(?ContribuinteSupp $contribuinte_supp): static
+    public function setContribuinteSupp(?ContribuinteSupp $contribuinte_supp): self
     {
         $this->contribuinte_supp = $contribuinte_supp;
 

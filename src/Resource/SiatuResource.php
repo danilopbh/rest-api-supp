@@ -22,6 +22,28 @@ class SiatuResource
         return array_map([ContribuinteSuppMapper::class, 'map'], $data);
     }
 
+    public function getContribuintesCertidaoSupp(): array
+    {
+        $response = $this->httpClient->request('GET', 'http://localhost:8000/api/contribuinte/siatu');
+        $data = $response->toArray();
+
+
+        $certidoesDivida = array();
+
+// Percorre o array original para extrair as certidões de dívida
+        foreach ($data as $contribuinte) {
+            if (isset($contribuinte['certidoesDivida'])) {
+                foreach ($contribuinte['certidoesDivida'] as $certidao) {
+                    $certidoesDivida[] = $certidao;
+                }
+            }
+        }
+
+
+
+        return array_map([CertidaoDividaSuppMapper::class, 'map'], $certidoesDivida);
+    }
+
 /*    public function getCertidoes(): array
     {
         $response = $this->httpClient->request('GET', 'http://localhost:8000/api/contribuinte/siatu/certidoes');
