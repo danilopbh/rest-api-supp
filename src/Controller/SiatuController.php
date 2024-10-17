@@ -41,7 +41,7 @@ class SiatuController extends AbstractController
 
         foreach ($contribuintes as $contribuinteDTO) {
 
-
+            
             $contribuinte = new ContribuinteSupp();
 
 
