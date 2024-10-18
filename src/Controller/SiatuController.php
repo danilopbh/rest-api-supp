@@ -30,13 +30,13 @@ class SiatuController extends AbstractController
 
         $contribuintes = $this->siatuResource->getContribuintes();
 
-        
+
 
         $certidaoDivida = $this->siatuResource->getContribuintesCertidaoSupp();
-       
+
         foreach ($contribuintes as $contribuinteDTO) {
 
-      
+
             $contribuinte = new ContribuinteSupp();
             //$contribuinte->setId($contribuinteDTO->id);
             $contribuinte->setNome($contribuinteDTO->nome);
@@ -52,24 +52,27 @@ class SiatuController extends AbstractController
 
 
             foreach ($certidaoDivida as $certidaoDTO) {
-           
+
                 if (!CertidaoDividaRules::validate($certidaoDTO)) {
                     continue;
                 }
 
+                if ($certidaoDTO->id_contribuinte_siatu == $contribuinteDTO->id) {
+                    $contribuinteSupp = $this->entityManager->getRepository(ContribuinteSupp::class)->find($contribuinteId);
 
-                $contribuinteSupp = $this->entityManager->getRepository(ContribuinteSupp::class)->find($contribuinteId);
-
-                $certidao = new CertidaoDividaSupp();
-                //$certidao->setId($certidaoDTO->id);
-                $certidao->setContribuinteSupp($contribuinteSupp);
-                $certidao->setValor($certidaoDTO->valor);
-                $certidao->setDescricao($certidaoDTO->descricao);
-                $certidao->setPdfDivida($certidaoDTO->pdfDivida);
-                $certidao->setDataVencimento($certidaoDTO->dataVencimento);
-                $certidao->setIdContribuinteSiatu($certidaoDTO->id_contribuinte_siatu);
-                $this->entityManager->persist($certidao);
+                    $certidao = new CertidaoDividaSupp();
+                    //$certidao->setId($certidaoDTO->id);
+                    $certidao->setContribuinteSupp($contribuinteSupp);
+                    $certidao->setValor($certidaoDTO->valor);
+                    $certidao->setDescricao($certidaoDTO->descricao);
+                    $certidao->setPdfDivida($certidaoDTO->pdfDivida);
+                    $certidao->setDataVencimento($certidaoDTO->dataVencimento);
+                    $certidao->setIdContribuinteSiatu($certidaoDTO->id_contribuinte_siatu);
+                    $this->entityManager->persist($certidao);
+                }
             }
+
+
             $this->entityManager->flush();
         }
 
