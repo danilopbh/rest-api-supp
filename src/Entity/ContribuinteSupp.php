@@ -30,6 +30,9 @@ class ContribuinteSupp
     #[ORM\OneToMany(targetEntity: CertidaoDividaSupp::class, mappedBy: 'contribuinte_supp')]
     private Collection $certidaoDividaSupp;
 
+    #[ORM\Column]
+    private ?int $id_contribuinte_siatu = null;
+
     public function __construct()
     {
         $this->certidaoDividaSupp = new ArrayCollection();
@@ -40,12 +43,12 @@ class ContribuinteSupp
         return $this->id;
     }
 
-    public function setId(string $id): static
+   /* public function setId(string $id): static
     {
         $this->id = $id;
 
         return $this;
-    }
+    }*/
 
     public function getNome(): ?string
     {
@@ -109,6 +112,18 @@ class ContribuinteSupp
                 $certidaoDividaSupp->setContribuinteSupp(null);
             }
         }
+
+        return $this;
+    }
+
+    public function getIdContribuinteSiatu(): ?int
+    {
+        return $this->id_contribuinte_siatu;
+    }
+
+    public function setIdContribuinteSiatu(int $id_contribuinte_siatu): static
+    {
+        $this->id_contribuinte_siatu = $id_contribuinte_siatu;
 
         return $this;
     }

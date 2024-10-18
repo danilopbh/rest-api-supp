@@ -17,16 +17,20 @@ class SiatuResource
     public function getContribuintes(): array
     {
         $response = $this->httpClient->request('GET', 'http://localhost:8000/api/contribuinte/siatu');
+        
+        
         $data = $response->toArray();
-
+  
+       
         return array_map([ContribuinteSuppMapper::class, 'map'], $data);
     }
 
     public function getContribuintesCertidaoSupp(): array
     {
         $response = $this->httpClient->request('GET', 'http://localhost:8000/api/contribuinte/siatu');
+   
         $data = $response->toArray();
-
+     
 
         $certidoesDivida = array();
 

@@ -55,12 +55,12 @@ class ContribuinteSiatuController extends AbstractController
                     'dataVencimento' => $certidaoDivida->getDataVencimento()->format('Y-m-d'),
                     'pdfDivida' => base64_encode($pdfContent),
                     'valor' => $certidaoDivida->getValor(),
-                    
-                    
+                    'id_contribuinte_siatu' => $certidaoDivida->getContribuinte()->getId(), 
                 ];
             }
             $data[] = [
                 'id' => $contribuinte->getId(),
+                'id_contribuinte_siatu' => $contribuinte->getId(), 
                 'nome' => $contribuinte->getNome(),
                 'cpf' => $contribuinte->getCpf(),
                 'endereco' => $contribuinte->getEndereco(),

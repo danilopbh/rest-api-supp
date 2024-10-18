@@ -8,3 +8,7 @@ composer require fakerphp/faker
 php bin/console doctrine:fixtures:load
 
 composer require tecnickcom/tcpdf
+
+
+A cada alteracao nas rotas durante o desenvolvimento, devera ser feita a limpeza da cache
+php bin/console cache:clear

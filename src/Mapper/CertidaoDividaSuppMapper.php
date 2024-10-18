@@ -14,7 +14,8 @@ class CertidaoDividaSuppMapper
             $data['valor'],
             $data['pdfDivida'],
             $data['descricao'],
-            new \DateTime($data['dataVencimento'])
+            new \DateTime($data['dataVencimento']),
+            $data['id_contribuinte_siatu']
         );
     }
 }

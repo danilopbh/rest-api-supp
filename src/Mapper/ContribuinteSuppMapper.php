@@ -12,7 +12,8 @@ class ContribuinteSuppMapper
             $data['id'],
             $data['nome'],
             $data['cpf'],
-            $data['endereco']
+            $data['endereco'],
+            $data['id_contribuinte_siatu'],
         );
     }
 }

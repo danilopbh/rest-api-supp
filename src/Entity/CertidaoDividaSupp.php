@@ -11,7 +11,7 @@ use App\Entity\ContribuinteSupp;
 class CertidaoDividaSupp
 {
     #[ORM\Id]
-   // #[ORM\GeneratedValue]
+    #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
 
@@ -29,6 +29,9 @@ class CertidaoDividaSupp
 
     #[ORM\ManyToOne(inversedBy: 'certidaoDividaSupp')]
     private ?ContribuinteSupp $contribuinte_supp = null;
+
+    #[ORM\Column]
+    private ?int $id_contribuinte_siatu = null;
 
     public function getId(): ?int
     {
@@ -91,6 +94,18 @@ class CertidaoDividaSupp
     public function setContribuinteSupp(?ContribuinteSupp $contribuinte_supp): self
     {
         $this->contribuinte_supp = $contribuinte_supp;
+
+        return $this;
+    }
+
+    public function getIdContribuinteSiatu(): ?int
+    {
+        return $this->id_contribuinte_siatu;
+    }
+
+    public function setIdContribuinteSiatu(int $id_contribuinte_siatu): static
+    {
+        $this->id_contribuinte_siatu = $id_contribuinte_siatu;
 
         return $this;
     }

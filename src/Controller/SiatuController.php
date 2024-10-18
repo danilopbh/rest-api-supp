@@ -22,7 +22,6 @@ class SiatuController extends AbstractController
         $this->entityManager = $entityManager;
     }
 
-
     #[Route("/api/importar", methods: ["POST"])]
 
     public function importarDados(): Response
@@ -30,37 +29,30 @@ class SiatuController extends AbstractController
         // Importar contribuintes
 
         $contribuintes = $this->siatuResource->getContribuintes();
-        $certidaoDivida = $this->siatuResource->getContribuintesCertidaoSupp();
 
-        /*echo '<pre>';
-            print_r($certidaoDivida);
-        echo '</pre>';
         
-        die();*/
 
-
+        $certidaoDivida = $this->siatuResource->getContribuintesCertidaoSupp();
+       
         foreach ($contribuintes as $contribuinteDTO) {
 
-            
+      
             $contribuinte = new ContribuinteSupp();
-
-
-            $contribuinte->setId($contribuinteDTO->id);
+            //$contribuinte->setId($contribuinteDTO->id);
             $contribuinte->setNome($contribuinteDTO->nome);
             $contribuinte->setCpf($contribuinteDTO->cpf);
             $contribuinte->setEndereco($contribuinteDTO->endereco);
+            $contribuinte->setIdContribuinteSiatu($contribuinteDTO->id_contribuinte_siatu);
             //$contribuinte->addCertidaoDividaSupp($contribuinteDTO->);
-
-
             $this->entityManager->persist($contribuinte);
             $this->entityManager->flush(); // Gerar o ID do contribuinte
 
 
-            $contribuinteId = $contribuinteDTO->id;
+            $contribuinteId = $contribuinte->getId();;
 
 
             foreach ($certidaoDivida as $certidaoDTO) {
-
+           
                 if (!CertidaoDividaRules::validate($certidaoDTO)) {
                     continue;
                 }
@@ -68,7 +60,6 @@ class SiatuController extends AbstractController
 
                 $contribuinteSupp = $this->entityManager->getRepository(ContribuinteSupp::class)->find($contribuinteId);
 
-                dd($contribuinteSupp);
                 $certidao = new CertidaoDividaSupp();
                 //$certidao->setId($certidaoDTO->id);
                 $certidao->setContribuinteSupp($contribuinteSupp);
@@ -76,7 +67,7 @@ class SiatuController extends AbstractController
                 $certidao->setDescricao($certidaoDTO->descricao);
                 $certidao->setPdfDivida($certidaoDTO->pdfDivida);
                 $certidao->setDataVencimento($certidaoDTO->dataVencimento);
-
+                $certidao->setIdContribuinteSiatu($certidaoDTO->id_contribuinte_siatu);
                 $this->entityManager->persist($certidao);
             }
             $this->entityManager->flush();
