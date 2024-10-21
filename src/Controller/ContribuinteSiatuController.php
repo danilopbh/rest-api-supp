@@ -57,7 +57,7 @@ class ContribuinteSiatuController extends AbstractController
                     'valor' => $certidaoDivida->getValor(),
                     'id_contribuinte_siatu' => $certidaoDivida->getContribuinte()->getId(), 
                     'situacao' => $certidaoDivida->getSituacao(),
-                    'data_situacao' => $certidaoDivida->getDataSituacao()->format('Y-m-d')
+                    'dataSituacao' => $certidaoDivida->getDataSituacao()->format('Y-m-d')
                 ];
             }
             $data[] = [

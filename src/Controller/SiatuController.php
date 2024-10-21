@@ -36,7 +36,7 @@ class SiatuController extends AbstractController
 
         foreach ($contribuintes as $contribuinteDTO) {
 
-
+           
             $contribuinte = new ContribuinteSupp();
             //$contribuinte->setId($contribuinteDTO->id);
             $contribuinte->setNome($contribuinteDTO->nome);
@@ -52,7 +52,7 @@ class SiatuController extends AbstractController
 
 
             foreach ($certidaoDivida as $certidaoDTO) {
-
+            
                 if (!CertidaoDividaRules::validate($certidaoDTO)) {
                     continue;
                 }
@@ -60,14 +60,22 @@ class SiatuController extends AbstractController
                 if ($certidaoDTO->id_contribuinte_siatu == $contribuinteDTO->id) {
                     $contribuinteSupp = $this->entityManager->getRepository(ContribuinteSupp::class)->find($contribuinteId);
 
+                    
+
                     $certidao = new CertidaoDividaSupp();
                     //$certidao->setId($certidaoDTO->id);
                     $certidao->setContribuinteSupp($contribuinteSupp);
                     $certidao->setValor($certidaoDTO->valor);
                     $certidao->setDescricao($certidaoDTO->descricao);
                     $certidao->setPdfDivida($certidaoDTO->pdfDivida);
-                    $certidao->setDataVencimento($certidaoDTO->dataVencimento);
+                   
+                    $certidao->setDataSituacao($certidaoDTO->dataSituacao);
                     $certidao->setIdContribuinteSiatu($certidaoDTO->id_contribuinte_siatu);
+                    $certidao->setDataVencimento($certidaoDTO->dataVencimento);
+                    $certidao->setIdCertidaoDividaSiatu($certidaoDTO->id);
+                    $certidao->setSituacao($certidaoDTO->situacao);
+
+
                     $this->entityManager->persist($certidao);
                 }
             }
