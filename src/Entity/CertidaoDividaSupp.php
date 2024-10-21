@@ -33,6 +33,15 @@ class CertidaoDividaSupp
     #[ORM\Column]
     private ?int $id_contribuinte_siatu = null;
 
+    #[ORM\Column]
+    private ?int $id_certidao_divida_siatu = null;
+
+    #[ORM\Column(length: 20)]
+    private ?string $situacao = null;
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $data_situacao = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -106,6 +115,42 @@ class CertidaoDividaSupp
     public function setIdContribuinteSiatu(int $id_contribuinte_siatu): static
     {
         $this->id_contribuinte_siatu = $id_contribuinte_siatu;
+
+        return $this;
+    }
+
+    public function getIdCertidaoDividaSiatu(): ?int
+    {
+        return $this->id_certidao_divida_siatu;
+    }
+
+    public function setIdCertidaoDividaSiatu(int $id_certidao_divida_siatu): static
+    {
+        $this->id_certidao_divida_siatu = $id_certidao_divida_siatu;
+
+        return $this;
+    }
+
+    public function getSituacao(): ?string
+    {
+        return $this->situacao;
+    }
+
+    public function setSituacao(string $situacao): static
+    {
+        $this->situacao = $situacao;
+
+        return $this;
+    }
+
+    public function getDataSituacao(): ?\DateTimeInterface
+    {
+        return $this->data_situacao;
+    }
+
+    public function setDataSituacao(\DateTimeInterface $data_situacao): static
+    {
+        $this->data_situacao = $data_situacao;
 
         return $this;
     }

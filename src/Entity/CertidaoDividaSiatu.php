@@ -30,6 +30,18 @@ class CertidaoDividaSiatu
     #[ORM\JoinColumn(nullable: false)]
     private ?ContribuinteSiatu $contribuinte_siatu = null;
 
+    #[ORM\Column(length: 20)]
+    private ?string $situacao = 'Ativa';
+
+    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    private ?\DateTimeInterface $data_situacao = null;
+
+    public function __construct()
+    {
+        // Define a data_situacao como a data e hora atual
+        $this->data_situacao = new \DateTime(); // Note que o formato de \DateTime será ajustado ao persistir
+    }
+
     public function getId(): ?int
     {
         return $this->id;
@@ -91,6 +103,30 @@ class CertidaoDividaSiatu
     public function setContribuinte(?ContribuinteSiatu $contribuinte_siatu): static
     {
         $this->contribuinte_siatu = $contribuinte_siatu;
+
+        return $this;
+    }
+
+    public function getSituacao(): ?string
+    {
+        return $this->situacao;
+    }
+
+    public function setSituacao(string $situacao): static
+    {
+        $this->situacao = $situacao;
+
+        return $this;
+    }
+
+    public function getDataSituacao(): ?\DateTime
+    {
+        return $this->data_situacao;
+    }
+
+    public function setDataSituacao(\DateTime $dataSituacao): self
+    {
+        $this->data_situacao = $dataSituacao;
 
         return $this;
     }

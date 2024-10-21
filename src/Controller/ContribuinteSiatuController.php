@@ -56,6 +56,8 @@ class ContribuinteSiatuController extends AbstractController
                     'pdfDivida' => base64_encode($pdfContent),
                     'valor' => $certidaoDivida->getValor(),
                     'id_contribuinte_siatu' => $certidaoDivida->getContribuinte()->getId(), 
+                    'situacao' => $certidaoDivida->getSituacao(),
+                    'data_situacao' => $certidaoDivida->getDataSituacao()->format('Y-m-d')
                 ];
             }
             $data[] = [

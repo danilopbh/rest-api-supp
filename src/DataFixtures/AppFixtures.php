@@ -16,6 +16,10 @@ class AppFixtures extends Fixture
        
         $faker = Factory::create('pt_BR'); // Para gerar dados no formato brasileiro
 
+
+        $situacaoOptions = ['ativa', 'quitada', 'cancelada', 'parcelamento', 'parc. discumprido', 'suspensa', 'alteracao de titulo'];
+
+
         for ($i = 0; $i < 20; $i++) {
             // Criar um Contribuinte
             $contribuinte = new ContribuinteSiatu();
@@ -27,10 +31,16 @@ class AppFixtures extends Fixture
 
             // Criar Certidões de Dívida para o Contribuinte
             for ($j = 0; $j < 3; $j++) {
+
+                $randomSituacao = $situacaoOptions [array_rand($situacaoOptions)];
+
+
                 $certidao = new CertidaoDividaSiatu();
                 $certidao->setDescricao( $faker->text() .' - '. $j);
                 $certidao->setDataVencimento($faker->dateTimeThisDecade);
+                $certidao->setDataSituacao($faker->dateTimeThisDecade);
                 $certidao->setValor($faker->randomFloat(2, 500, 10000));
+                $certidao->setSituacao($randomSituacao);
                 $certidao->setContribuinte($contribuinte); // Estabelecer a relação
                 $pdfFileName = 'certidao_divida_' . $j . '.pdf';
                 // Gerar PDF em base64
