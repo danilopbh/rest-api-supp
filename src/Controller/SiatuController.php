@@ -4,12 +4,17 @@ namespace App\Controller;
 
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\JsonResponse;
+
 use App\Resource\SiatuResource;
 use Doctrine\ORM\EntityManagerInterface;
 use App\Entity\ContribuinteSupp;
 use App\Entity\CertidaoDividaSupp;
 use App\Rules\CertidaoDividaRules;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Rules\ContribuinteRules;
+
+
 
 class SiatuController extends AbstractController
 {
@@ -30,12 +35,17 @@ class SiatuController extends AbstractController
 
         $contribuintes = $this->siatuResource->getContribuintes();
 
-
-
         $certidaoDivida = $this->siatuResource->getContribuintesCertidaoSupp();
 
-        foreach ($contribuintes as $contribuinteDTO) {
+        $allErrors = [];
 
+        foreach ($contribuintes as $contribuinteDTO) {
+            $contribuenteErrors = (new ContribuinteRules())->validate((array)$contribuinteDTO);
+            if (!empty($contribuenteErrors)) {
+                $allErrors[] = $contribuenteErrors; 
+               // return new JsonResponse(['errors' => $contribuenteErrors], Response::HTTP_BAD_REQUEST);
+                continue;
+            }
            
             $contribuinte = new ContribuinteSupp();
             //$contribuinte->setId($contribuinteDTO->id);
@@ -85,10 +95,11 @@ class SiatuController extends AbstractController
         }
 
 
+        if (!empty($allErrors)) {
+            return new JsonResponse(['errors' => $allErrors], Response::HTTP_BAD_REQUEST);
+        } else {
 
-
-
-
-        return new Response('Dados importados com sucesso.');
+        return new Response('Todos os dados importados com sucesso.');
+        }
     }
 }

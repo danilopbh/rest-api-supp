@@ -12,3 +12,5 @@ composer require tecnickcom/tcpdf
 
 A cada alteracao nas rotas durante o desenvolvimento, devera ser feita a limpeza da cache
 php bin/console cache:clear
+
+composer require doctrine/doctrine-bundle
