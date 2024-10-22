@@ -11,8 +11,22 @@ class CertidaoDividaSuppDTO
     public $pdfDivida; // Aqui o blob é tratado como um dado genérico
     public \DateTimeInterface  $dataVencimento;
     public int $id_contribuinte_siatu;
+    public string $situacao;
+    public \DateTimeInterface  $dataSituacao;
+ 
 
-    public function __construct(int $id, int $contribuinteSuppId, float $valor, $pdfDivida, string $descricao, \DateTimeInterface  $dataVencimento, int $id_contribuinte_siatu)
+    public function __construct(
+        int $id, 
+        int $contribuinteSuppId, 
+        float $valor, 
+        $pdfDivida, 
+        string $descricao,
+        \DateTimeInterface  $dataVencimento, 
+        int $id_contribuinte_siatu,
+        string $situacao,
+        \DateTimeInterface  $dataSituacao,
+
+        )
     {
         $this->id = $id;
         $this->contribuinteSuppId = $contribuinteSuppId;
@@ -21,5 +35,7 @@ class CertidaoDividaSuppDTO
         $this->descricao = $descricao;
         $this->dataVencimento = $dataVencimento;
         $this->id_contribuinte_siatu = $id_contribuinte_siatu;
+        $this->situacao = $situacao;
+        $this->dataSituacao = $dataSituacao;
     }
 }
