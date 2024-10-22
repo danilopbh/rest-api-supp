@@ -45,7 +45,7 @@ class SiatuController extends AbstractController
             $contribuinte->setIdContribuinteSiatu($contribuinteDTO->id_contribuinte_siatu);
             //$contribuinte->addCertidaoDividaSupp($contribuinteDTO->);
             $this->entityManager->persist($contribuinte);
-            $this->entityManager->flush(); // Gerar o ID do contribuinte
+            //$this->entityManager->flush(); // Gerar o ID do contribuinte
 
 
             $contribuinteId = $contribuinte->getId();;

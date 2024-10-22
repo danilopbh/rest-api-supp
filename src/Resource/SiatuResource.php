@@ -48,12 +48,4 @@ class SiatuResource
         return array_map([CertidaoDividaSuppMapper::class, 'map'], $certidoesDivida);
     }
 
-/*    public function getCertidoes(): array
-    {
-        $response = $this->httpClient->request('GET', 'http://localhost:8000/api/contribuinte/siatu/certidoes');
-        $data = $response->toArray();
-
-        return array_map([CertidaoDividaSuppMapper::class, 'map'], $data);
-    }
-        */
 }

@@ -20,7 +20,7 @@ class AppFixtures extends Fixture
         $situacaoOptions = ['ativa', 'quitada', 'cancelada', 'parcelamento', 'parc. discumprido', 'suspensa', 'alteracao de titulo'];
 
 
-        for ($i = 0; $i < 20; $i++) {
+        for ($i = 0; $i < 1; $i++) {
             // Criar um Contribuinte
             $contribuinte = new ContribuinteSiatu();
             $contribuinte->setNome($faker->firstName . ' ' . $faker->lastName);
@@ -30,7 +30,7 @@ class AppFixtures extends Fixture
           
 
             // Criar Certidões de Dívida para o Contribuinte
-            for ($j = 0; $j < 3; $j++) {
+            for ($j = 0; $j < 2; $j++) {
 
                 $randomSituacao = $situacaoOptions [array_rand($situacaoOptions)];
 
