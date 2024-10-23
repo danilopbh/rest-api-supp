@@ -34,9 +34,8 @@ class SiatuController extends AbstractController
         // Importar contribuintes
 
         $contribuintes = $this->siatuResource->getContribuintes();
-
         $certidaoDivida = $this->siatuResource->getContribuintesCertidaoSupp();
-
+       
         $allErrors = [];
 
         foreach ($contribuintes as $contribuinteDTO) {
@@ -58,7 +57,7 @@ class SiatuController extends AbstractController
             $this->entityManager->flush(); // Gerar o ID do contribuinte
 
 
-            $contribuinteId = $contribuinte->getId();;
+            $contribuinteId = $contribuinte->getId();
 
 
             foreach ($certidaoDivida as $certidaoDTO) {
@@ -71,6 +70,18 @@ class SiatuController extends AbstractController
                     $contribuinteSupp = $this->entityManager->getRepository(ContribuinteSupp::class)->find($contribuinteId);
 
                     
+                    $certidaoExistente = $this->entityManager->getRepository(CertidaoDividaSupp::class)
+                    ->findOneBy(['id_certidao_divida_siatu' => $certidaoDTO->id]);
+
+                    if ($certidaoExistente) {
+                        // Retornar mensagem de erro informando que a CDA já existe
+                        return new JsonResponse([
+                            'status' => 'error',
+                            'codigo' => '2',
+                            'message' => 'A CDA com o numero ' . $certidaoDTO->id . ' ja existe no banco de dados.'
+                        ], Response::HTTP_CONFLICT);  // HTTP 409: Conflict
+                    }
+
 
                     $certidao = new CertidaoDividaSupp();
                     //$certidao->setId($certidaoDTO->id);
