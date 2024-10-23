@@ -13,6 +13,9 @@ use App\Entity\CertidaoDividaSupp;
 use App\Rules\CertidaoDividaRules;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Rules\ContribuinteRules;
+use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Psr\Log\LoggerInterface;
+
 
 
 
@@ -20,11 +23,16 @@ class SiatuController extends AbstractController
 {
     private SiatuResource $siatuResource;
     private EntityManagerInterface $entityManager;
+    private $httpClient;  // Adiciona o HttpClient para enviar o POST ao SIATU
+    private $logger;  // Logger para registrar os erros
 
-    public function __construct(SiatuResource $siatuResource, EntityManagerInterface $entityManager)
+    
+    public function __construct(SiatuResource $siatuResource, EntityManagerInterface $entityManager, HttpClientInterface $httpClient, LoggerInterface $logger)
     {
         $this->siatuResource = $siatuResource;
         $this->entityManager = $entityManager;
+        $this->httpClient = $httpClient;  // Injeta o HttpClient
+        $this->logger = $logger;  // Injeção do Logger
     }
 
     #[Route("/api/importar", methods: ["POST"])]
@@ -37,11 +45,15 @@ class SiatuController extends AbstractController
         $certidaoDivida = $this->siatuResource->getContribuintesCertidaoSupp();
        
         $allErrors = [];
+        $status = 'sucesso';  // Supondo que o status inicial seja de sucesso
+        $mensagemErro = '';   // Variável para armazenar possíveis mensagens de erro
 
         foreach ($contribuintes as $contribuinteDTO) {
             $contribuenteErrors = (new ContribuinteRules())->validate((array)$contribuinteDTO);
             if (!empty($contribuenteErrors)) {
                 $allErrors[] = $contribuenteErrors; 
+                $status = 'sucesso';  // Supondo que o status inicial seja de sucesso
+                $mensagemErro = 'Erro ao validar contribuinte ' . $contribuinteDTO->nome;   // Variável pa
                // return new JsonResponse(['errors' => $contribuenteErrors], Response::HTTP_BAD_REQUEST);
                 continue;
             }
@@ -107,10 +119,55 @@ class SiatuController extends AbstractController
 
 
         if (!empty($allErrors)) {
+            $status = 'erro';
+            $mensagemErro = 'Erros encontrados na importação';
+        }
+
+        /*if (!empty($allErrors)) {
             return new JsonResponse(['errors' => $allErrors], Response::HTTP_BAD_REQUEST);
+
         } else {
 
         return new Response('Todos os dados importados com sucesso.');
+        }*/
+
+        $this->notificarSiatu($status, $mensagemErro);
+
+        if ($status === 'erro') {
+            return new JsonResponse(['errors' => $allErrors], Response::HTTP_BAD_REQUEST);
+        } else {
+            return new Response('Todos os dados importados com sucesso.');
+        }
+    }
+
+    // Função para enviar POST de notificação ao SIATU
+    private function notificarSiatu(string $status, string $mensagemErro): void
+    {
+        try {
+            // Monta os dados para o POST ao SIATU
+            $data = [
+                'status' => $status,
+                'mensagem' => $status === 'sucesso' ? 'Importação bem-sucedida' : 'Erro na importação',
+                'detalhesErro' => $mensagemErro
+            ];
+
+            // Envia o POST para o SIATU
+           /* $this->httpClient->request('POST', 'http://siatu/api/endpoint', [
+                'json' => $data,
+            ]);*/
+
+
+            echo 'Siatu notificado';
+            print_r($data);
+
+
+
+        } catch (\Exception $e) {
+            $this->logger->error('Falha ao enviar notificação ao SIATU: ' . $e->getMessage(), [
+                'exception' => $e,
+                'status' => $status,
+                'mensagemErro' => $mensagemErro,
+            ]);
         }
     }
 }
