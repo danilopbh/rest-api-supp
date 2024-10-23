@@ -78,6 +78,29 @@ class SiatuController extends AbstractController
                     continue;
                 }
 
+                $validationErrors = CertidaoDividaRules::validate($certidaoDTO);
+
+                if (!empty($validationErrors)) {
+                    // Exemplo: Adiciona os erros ao array de erros
+                    $allErrors[] = [
+                        'certidaoId' => $certidaoDTO->id,
+                        'erros' => $validationErrors
+                    ];
+
+                    $status = 'Error';
+
+                    $this->notificarSiatu($status, $mensagemErro,$allErrors);
+                    // Ou, se quiser parar o processo imediatamente e retornar o erro:
+                    return new JsonResponse([
+                        'status' => 'error',
+                        'codigo' => '1',
+                        'message' => 'Erro de validação na certidão',
+                        'detalhes' => $validationErrors
+                    ], Response::HTTP_BAD_REQUEST);
+                    
+                    continue; // Pula para a próxima certidão
+                }
+
                 if ($certidaoDTO->id_contribuinte_siatu == $contribuinteDTO->id) {
                     $contribuinteSupp = $this->entityManager->getRepository(ContribuinteSupp::class)->find($contribuinteId);
 
@@ -92,12 +115,12 @@ class SiatuController extends AbstractController
                         $mensagemErro = 'A CDA com o número ' . $certidaoDTO->id . ' já existe no banco de dados.';
             
                         $this->notificarSiatu($status, $mensagemErro,  $allErrors);
-                        
-                        return new JsonResponse([
+                        continue;
+                        /*return new JsonResponse([
                             'status' => 'error',
                             'codigo' => '2',
                             'message' => 'A CDA com o numero ' . $certidaoDTO->id . ' ja existe no banco de dados.'
-                        ], Response::HTTP_CONFLICT);  // HTTP 409: Conflict
+                        ], Response::HTTP_CONFLICT);  // HTTP 409: Conflict*/
                     }
 
 
@@ -163,7 +186,7 @@ class SiatuController extends AbstractController
             // Monta os dados para o POST ao SIATU
             $data = [
                 'status' => $status,
-                'mensagem' => $status === 'sucesso' ? 'Importação bem-sucedida' : 'Erro na importação',
+                'mensagem' => $status === 'sucesso' ? 'Importacao bem-sucedida' : 'Erro na importacao',
                 'detalhesErro' => $mensagemErro,
                 'DetalheErro' => $allErrors
             ];
@@ -177,9 +200,9 @@ class SiatuController extends AbstractController
             echo 'Siatu notificado';
 
             $json = json_encode($data);
-
+            
             echo $json;
-
+            
 
 
         } catch (\Exception $e) {
