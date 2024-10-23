@@ -87,6 +87,12 @@ class SiatuController extends AbstractController
 
                     if ($certidaoExistente) {
                         // Retornar mensagem de erro informando que a CDA já existe
+                        
+                        $status = 'erro';
+                        $mensagemErro = 'A CDA com o número ' . $certidaoDTO->id . ' já existe no banco de dados.';
+            
+                        $this->notificarSiatu($status, $mensagemErro,  $allErrors);
+                        
                         return new JsonResponse([
                             'status' => 'error',
                             'codigo' => '2',
@@ -131,24 +137,35 @@ class SiatuController extends AbstractController
         return new Response('Todos os dados importados com sucesso.');
         }*/
 
-        $this->notificarSiatu($status, $mensagemErro);
+        
+        
+        
+        
+        
+        
+        $this->notificarSiatu($status, $mensagemErro,$allErrors);
 
         if ($status === 'erro') {
             return new JsonResponse(['errors' => $allErrors], Response::HTTP_BAD_REQUEST);
         } else {
             return new Response('Todos os dados importados com sucesso.');
         }
+    
+    
+    
+    
     }
 
     // Função para enviar POST de notificação ao SIATU
-    private function notificarSiatu(string $status, string $mensagemErro): void
+    private function notificarSiatu(string $status, string $mensagemErro, $allErrors): void
     {
         try {
             // Monta os dados para o POST ao SIATU
             $data = [
                 'status' => $status,
                 'mensagem' => $status === 'sucesso' ? 'Importação bem-sucedida' : 'Erro na importação',
-                'detalhesErro' => $mensagemErro
+                'detalhesErro' => $mensagemErro,
+                'DetalheErro' => $allErrors
             ];
 
             // Envia o POST para o SIATU
@@ -158,7 +175,10 @@ class SiatuController extends AbstractController
 
 
             echo 'Siatu notificado';
-            print_r($data);
+
+            $json = json_encode($data);
+
+            echo $json;
 
 
 
