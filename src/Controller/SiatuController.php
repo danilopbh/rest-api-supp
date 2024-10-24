@@ -189,22 +189,4 @@ class SiatuController extends AbstractController
         }
     }
 
-
-
-
-    private function adicionarCDAAoContribuinte(ContribuinteSupp $contribuinte, $certidaoDTO)
-    {
-        $certidao = new CertidaoDividaSupp();
-        $certidao->setContribuinteSupp($contribuinte);
-        $certidao->setValor($certidaoDTO->valor);
-        $certidao->setDescricao($certidaoDTO->descricao);
-        $certidao->setPdfDivida($certidaoDTO->pdfDivida);
-        $certidao->setDataSituacao($certidaoDTO->dataSituacao);
-        $certidao->setIdContribuinteSiatu($certidaoDTO->id_contribuinte_siatu);
-        $certidao->setDataVencimento($certidaoDTO->dataVencimento);
-        $certidao->setIdCertidaoDividaSiatu($certidaoDTO->id);
-        $certidao->setSituacao($certidaoDTO->situacao);
-
-        $this->entityManager->persist($certidao);
-    }
 }
