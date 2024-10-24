@@ -73,14 +73,12 @@ class SiatuController extends AbstractController
 
 
             foreach ($certidaoDivida as $certidaoDTO) {
-            
-                if (!CertidaoDividaRules::validate($certidaoDTO)) {
-                    continue;
-                }
-
+               
+                
                 $validationErrors = CertidaoDividaRules::validate($certidaoDTO);
-
+                
                 if (!empty($validationErrors)) {
+           
                     // Exemplo: Adiciona os erros ao array de erros
                     $allErrors[] = [
                         'certidaoId' => $certidaoDTO->id,
@@ -100,8 +98,9 @@ class SiatuController extends AbstractController
                     
                     continue; // Pula para a próxima certidão
                 }
-
+            
                 if ($certidaoDTO->id_contribuinte_siatu == $contribuinteDTO->id) {
+                   
                     $contribuinteSupp = $this->entityManager->getRepository(ContribuinteSupp::class)->find($contribuinteId);
 
                     
