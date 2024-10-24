@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Counters;
+namespace App\Counter;
 
 class CertidaoDividaCounter
 {
