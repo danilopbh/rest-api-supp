@@ -14,3 +14,5 @@ A cada alteracao nas rotas durante o desenvolvimento, devera ser feita a limpeza
 php bin/console cache:clear
 
 composer require doctrine/doctrine-bundle
+
+Ajustar senha do banco
