@@ -15,6 +15,8 @@ use App\Rules\ContribuinteRules;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Psr\Log\LoggerInterface;
 use TCPDF;
+use Gaufrette\Filesystem;
+use Knp\Bundle\GaufretteBundle\FilesystemMap;
 
 class SiatuController extends AbstractController
 {
@@ -32,9 +34,11 @@ class SiatuController extends AbstractController
     }
 
     #[Route("/api/importar", methods: ["POST"])]
-
-    public function importarDados(): Response
+    public function importarDados(FilesystemMap $filesystemMap): Response
     {
+        //Obtém o sistema de arquivos configurado
+        $fileSystem = $filesystemMap->get('pdf_storage');
+     
         // Importar contribuintes
         $contribuintes = $this->siatuResource->getContribuintes();
         $certidaoDivida = $this->siatuResource->getContribuintesCertidaoSupp();
@@ -44,16 +48,19 @@ class SiatuController extends AbstractController
         $mensagemErro = '';
 
         foreach ($contribuintes as $contribuinteDTO) {
-
+            // Valida o contribuinte
             $contribuenteErrors = (new ContribuinteRules())->validate((array)$contribuinteDTO);
             if (!empty($contribuenteErrors)) {
                 $allErrors[] = $contribuenteErrors;
-                $status = 'sucesso';
-                $mensagemErro = 'Erro ao validar contribuinte ' . $contribuinteDTO->nome;   // Variável pa
+                $status = 'sucesso'; //Mudado pra 'erro' para indicar que houve um problema
+                $mensagemErro = 'Erro ao validar contribuinte ' . $contribuinteDTO->nome;
                 continue;
             }
+            //Procura o contribuinte no banco de dados
             $contribuinteSupp = $this->entityManager->getRepository(ContribuinteSupp::class)->findOneBy(['cpf' => $contribuinteDTO->cpf]);
+            $contribuinteId = $contribuinteSupp ? $contribuinteSupp->getId() : null;
 
+            //Se o contribuinte não existir, cria um novo
             if (!$contribuinteSupp) {
 
                 $contribuinte = new ContribuinteSupp();
@@ -62,7 +69,7 @@ class SiatuController extends AbstractController
                 $contribuinte->setEndereco($contribuinteDTO->endereco);
                 $contribuinte->setIdContribuinteSiatu($contribuinteDTO->id_contribuinte_siatu);
                 $this->entityManager->persist($contribuinte);
-                $this->entityManager->flush();
+                $this->entityManager->flush(); //Salva o novo contribuinte
 
 
                 $contribuinteId = $contribuinte->getId();
@@ -71,10 +78,8 @@ class SiatuController extends AbstractController
                 $contribuinteId = $contribuinteSupp->getId();
             }
 
-            // Para garantir que geramos apenas 3 arquivos por certidão
-            $certidaoCount = 0;
-
             foreach ($certidaoDivida as $certidaoDTO) {
+                //Valida a certidão
                 $validationErrors = CertidaoDividaRules::validate($certidaoDTO);
 
                 // Validação de erros
@@ -133,20 +138,21 @@ class SiatuController extends AbstractController
                     $certidao->setIdCertidaoDividaSiatu($certidaoDTO->id);
                     $certidao->setSituacao($certidaoDTO->situacao);
 
+                    // Verifica se a certidão já foi processada
+                    if (!$certidaoExistente) {
+                        // Gera e salva o PDF
+                        $pdfFilePath = $this->generateAndExportPdf($certidao, $fileSystem);
+                        $certidao->setPdfdivida($pdfFilePath); // Salva o caminho no banco
+                    } else {
+                        error_log("Certidão já existe no banco: " . $certidaoDTO->id);
+                    }
+
                     $this->entityManager->persist($certidao);
                 }
             }
-
             // Após a execução, faz o flush
             $this->entityManager->flush();
-            // Gera o PDF 3 vezes para cada certidão
-            for ($i = 0; $i < 3; $i++) {
-                $this->generateAndExportPdf($certidao, $i);
-            }
-
-            $certidaoCount += 3; // Contabiliza 3 certidões geradas
         }
-
 
         if (!empty($allErrors)) {
             $status = 'erro';
@@ -195,25 +201,18 @@ class SiatuController extends AbstractController
         }
     }
 
-    private function generateAndExportPdf(CertidaoDividaSupp $certidao, int $index): void
-    {
-        // Criar diretório para armazenar os PDFs, se não existir
-        $userName = getenv('USERNAME') ?: getenv('USER');
-        $directory = '/home/' . $userName . '/certidoes_geradas/';
-        if (!is_dir($directory)) {
-            mkdir($directory, 0777, true); // Permissões para criar a pasta
-        }
-
+    private function generateAndExportPdf(CertidaoDividaSupp $certidao, ?Filesystem $fileSystem = null): string
+    {    
         // Gerar PDF
         $pdf = new TCPDF();
         $pdf->SetCreator(PDF_CREATOR);
         $pdf->SetAuthor('Sistema Automático');
-        $pdf->SetTitle('Certidão de Dívida - ' . $index);
+        $pdf->SetTitle('Certidão de Dívida - ' . uniqid());
         $pdf->SetSubject('Certidão de Dívida Ativa');
         $pdf->SetKeywords('Certidão, Dívida, PDF, Sistema');
-
+    
         $pdf->AddPage();
-
+    
         // Definir o conteúdo dinâmico do PDF com os dados do banco
         $html = "
         <h1>Certidão de Dívida Ativa</h1>
@@ -224,29 +223,22 @@ class SiatuController extends AbstractController
         <p><strong>Valor:</strong> R$ " . number_format($certidao->getValor(), 2, ',', '.') . "</p>
         <p><strong>Situação:</strong> " . $certidao->getSituacao() . "</p>
         <p><strong>Atualização da Situação:</strong> " . $certidao->getDataSituacao()->format('d/m/Y') . "</p>";
-
+    
         $pdf->writeHTML($html, true, false, true, false, '');
-
-        // Salvar o PDF no diretório especificado
-        $pdfFilePath = $directory . 'certidao_' . $certidao->getId() . '_' . $index . '.pdf';
-        $pdf->Output($pdfFilePath, 'F'); // 'F' indica que o PDF deve ser salvo em um arquivo
-    }
-
-    public function exportPdfToFile(string $pdfContent, $certidaoId): void
-    {
-        // Obter o nome do usuário do sistema operacional
-        $userName = getenv('USERNAME') ?: getenv('USER');
-
-        // Verificar se o diretório existe, se não, criar
-        $directory = '/home/' . $userName . '/certidoes_geradas';
-        if (!is_dir($directory)) {
-            mkdir($directory, 0777, true); // Permissões para criar a pasta
+    
+        // Gera o nome único para o arquivo e salva usando Gaufrette
+        $pdfFileName = 'certidao_' . uniqid() . '.pdf';
+        $pdfContent = $pdf->Output('', 'S');
+    
+        try {
+            // Escreve o arquivo usando o Gaufrette FileSystem
+            $fileSystem->write($pdfFileName, $pdfContent);
+            
+            // Como o diretório base já está configurado no knp_gaufrette.yaml,
+            // retornamos apenas o nome do arquivo
+            return $pdfFileName;
+        } catch (\Exception $e) {
+            throw new \RuntimeException('Erro ao salvar o arquivo PDF: ' . $e->getMessage());
         }
-
-        // Definir o nome do arquivo com base no ID ou outro atributo
-        $filePath = $directory . 'certidao_' . $certidaoId . '.pdf';
-
-        // Salvar o conteúdo binário no arquivo
-        file_put_contents($filePath, $pdfContent);
     }
 }

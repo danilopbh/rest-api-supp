@@ -1,0 +1,11 @@
+knp_gaufrette:
+    adapters:
+        local_storage:
+            local:
+                # Altere aqui o nome do usuário para o seu usuário da máquina
+                directory: '/home/isaac/certidoes_geradas' 
+                create: true
+              
+    filesystems:
+        pdf_storage:
+            adapter: local_storage

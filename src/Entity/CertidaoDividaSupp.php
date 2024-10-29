@@ -18,7 +18,7 @@ class CertidaoDividaSupp
     #[ORM\Column]
     private ?float $valor = null;
 
-    #[ORM\Column(type: Types::BLOB)]
+    #[ORM\Column(type: Types::STRING)]
     private $pdfdivida;
 
     #[ORM\Column(length: 255)]
