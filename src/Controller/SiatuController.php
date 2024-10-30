@@ -142,7 +142,7 @@ class SiatuController extends AbstractController
                     if (!$certidaoExistente) {
                         // Gera e salva o PDF
                         $pdfFilePath = $this->generateAndExportPdf($certidao, $fileSystem);
-                        $certidao->setPdfdivida($pdfFilePath); // Salva o caminho no banco
+                        $certidao->setPdfdividaPath($pdfFilePath); // Salva o caminho no banco
                     } else {
                         error_log("Certidão já existe no banco: " . $certidaoDTO->id);
                     }
@@ -150,9 +150,10 @@ class SiatuController extends AbstractController
                     $this->entityManager->persist($certidao);
                 }
             }
-            // Após a execução, faz o flush
-            $this->entityManager->flush();
         }
+
+        // Após a execução, faz o flush
+        $this->entityManager->flush();
 
         if (!empty($allErrors)) {
             $status = 'erro';
@@ -201,7 +202,7 @@ class SiatuController extends AbstractController
         }
     }
 
-    private function generateAndExportPdf(CertidaoDividaSupp $certidao, ?Filesystem $fileSystem = null): string
+    private function generateAndExportPdf(CertidaoDividaSupp $certidao, Filesystem $fileSystem): string
     {    
         // Gerar PDF
         $pdf = new TCPDF();
@@ -226,8 +227,12 @@ class SiatuController extends AbstractController
     
         $pdf->writeHTML($html, true, false, true, false, '');
     
+        // Obter o nome do usuário do sistema operacional
+        $userName = getenv('USERNAME') ?: getenv('USER');
+
         // Gera o nome único para o arquivo e salva usando Gaufrette
-        $pdfFileName = 'certidao_' . uniqid() . '.pdf';
+        $pdfFilePath = '/home/' . $userName . '/certidoes_geradas/';
+        $pdfFileName = $pdfFilePath . 'certidao_' . uniqid() . '.pdf';
         $pdfContent = $pdf->Output('', 'S');
     
         try {
@@ -240,5 +245,7 @@ class SiatuController extends AbstractController
         } catch (\Exception $e) {
             throw new \RuntimeException('Erro ao salvar o arquivo PDF: ' . $e->getMessage());
         }
+        // Retorna o caminho do PDF salvo
+        return $pdfFileName;
     }
 }

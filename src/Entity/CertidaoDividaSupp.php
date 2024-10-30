@@ -18,7 +18,7 @@ class CertidaoDividaSupp
     #[ORM\Column]
     private ?float $valor = null;
 
-    #[ORM\Column(type: Types::STRING)]
+    #[ORM\Column(type: Types::BLOB)]
     private $pdfdivida;
 
     #[ORM\Column(length: 255)]
@@ -41,6 +41,9 @@ class CertidaoDividaSupp
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $data_situacao = null;
+
+    #[ORM\Column(type: Types::STRING, nullable: true)]
+    private ?string $pdfDividaPath = null;
 
     public function getId(): ?int
     {
@@ -152,6 +155,18 @@ class CertidaoDividaSupp
     {
         $this->data_situacao = $data_situacao;
 
+        return $this;
+    }
+
+    public function getPdfDividaPath(): ?string
+    {
+        return $this->pdfDividaPath;
+    }
+
+    public function setPdfDividaPath(?string $pdfDividaPath): self
+    {
+        $this->pdfDividaPath = $pdfDividaPath;
+        
         return $this;
     }
 }
