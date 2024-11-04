@@ -72,9 +72,11 @@ class SiatuController extends AbstractController
             }
 
             // Para garantir que geramos apenas 3 arquivos por certidão
-            $certidaoCount = 0;
+           // $certidaoCount = 0;
 
+            $count = 1;
             foreach ($certidaoDivida as $certidaoDTO) {
+                $count = $count + 1;
                 $validationErrors = CertidaoDividaRules::validate($certidaoDTO);
 
                 // Validação de erros
@@ -137,14 +139,16 @@ class SiatuController extends AbstractController
                 }
             }
 
-            // Após a execução, faz o flush
-            $this->entityManager->flush();
-            // Gera o PDF 3 vezes para cada certidão
-            for ($i = 0; $i < 3; $i++) {
-                $this->generateAndExportPdf($certidao, $i);
-            }
+            if (isset($certidao)) {
+                // Após a execução, faz o flush
+                $this->entityManager->flush();
+                // Gera o PDF 3 vezes para cada certidão
+                for ($i = 0; $i < $certidaoDTO; $i++) {
+                    $this->generateAndExportPdf($certidao, $i);
+                }
 
-            $certidaoCount += 3; // Contabiliza 3 certidões geradas
+              //  $certidaoCount += 3; // Contabiliza 3 certidões geradas
+            }
         }
 
 
