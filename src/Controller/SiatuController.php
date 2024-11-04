@@ -253,4 +253,14 @@ class SiatuController extends AbstractController
         // Salvar o conteúdo binário no arquivo
         file_put_contents($filePath, $pdfContent);
     }
+
+
+
+
+    #[Route("/api/importar/cda", methods: ["POST"])]
+
+    public function importarDadosCda(): Response
+    {
+        return new Response('Todos os dados importados com sucesso.');
+    }
 }
